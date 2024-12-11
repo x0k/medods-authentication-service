@@ -13,7 +13,9 @@ type UnitOfWork struct {
 }
 
 func NewUnitOfWork(ctx context.Context, pgxPool *pgxpool.Pool) (*UnitOfWork, error) {
-	tx, err := pgxPool.Begin(ctx)
+	tx, err := pgxPool.BeginTx(ctx, pgx.TxOptions{
+		IsoLevel: pgx.Serializable,
+	})
 	if err != nil {
 		return nil, err
 	}
