@@ -1,0 +1,16 @@
+with-expecter: True
+inpackage: True
+dir: "{{.InterfaceDir}}"
+mockname: "Mock{{.InterfaceName}}"
+outpkg: "{{.PackageName}}"
+filename: "mock_{{.InterfaceName}}.go"
+packages:
+  github.com/x0k/medods-authentication-service/internal/lib/unit_of_work:
+    interfaces:
+      UnitOfWork:
+      Factory:
+  github.com/x0k/medods-authentication-service/internal/auth:
+    interfaces:
+      UsersRepository:
+      RefreshTokensRepository:
+      MessagesSender:
