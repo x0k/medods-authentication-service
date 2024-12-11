@@ -84,7 +84,6 @@ func newService[T any](
 }
 
 func (s *service[T]) IssueTokens(ctx context.Context, userId uuid.UUID, ipAddress string) (string, string, *shared.DomainError) {
-	// Эмуляция аутентификации
 	if err := s.userExists(ctx, userId); err != nil {
 		err.Err = fmt.Errorf("%w: %s", ErrFailedToIssueTokens, err.Err)
 		return "", "", err
@@ -323,9 +322,7 @@ func (s *service[T]) issueTokens(
 			"failed to sign refresh token",
 		)
 	}
-	// Тут нет разницы между хешем Access токена и хешем Access токена + подпись.
-	// Из этого следует, что при требуемом подходе Refresh токен вовсе не нужен
-	// и может быть заменен хешем Access токена в базе...
+	// Тут нет разницы между хешем Access токена и хешем Access токена c подписью.
 	hashOfAccessTokenHash, err := bcrypt.GenerateFromPassword(accessTokenHashSlice, bcrypt.DefaultCost)
 	if err != nil {
 		return tokens{}, shared.NewUnexpectedError(
