@@ -198,7 +198,8 @@ func (s *service[T]) Refresh(
 			"failed to check refresh token",
 		)
 	}
-	if err := bcrypt.CompareHashAndPassword(tokenHash, accessTokenHashSlice); err != nil {
+	err = bcrypt.CompareHashAndPassword(tokenHash, accessTokenHashSlice)
+	if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
 		s.log.Warn(
 			ctx,
 			"stale tokens pair reuse attempt",
@@ -208,6 +209,12 @@ func (s *service[T]) Refresh(
 		return "", "", shared.NewDomainError(
 			fmt.Errorf("%w: compare hash: %s", ErrFailedToRefreshTokens, err),
 			"invalid refresh token",
+		)
+	}
+	if err != nil {
+		return "", "", shared.NewUnexpectedError(
+			fmt.Errorf("%w: compare hash: %s", ErrFailedToRefreshTokens, err),
+			"failed to check refresh token",
 		)
 	}
 	tokens, dErr := s.issueTokens(userId, ipAddress)

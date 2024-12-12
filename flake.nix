@@ -29,6 +29,8 @@
           shellHook = ''
             source <(COMPLETE=bash mk)
           '';
+          # CGO_CFLAGS="-U_FORTIFY_SOURCE -Wno-error";
+          # CGO_CPPFLAGS="-U_FORTIFY_SOURCE -Wno-error";
         };
       };
     };
