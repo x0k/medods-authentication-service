@@ -224,6 +224,13 @@ func (s *service[T]) Refresh(
 	}
 	var message string
 	if oldIpAddress != ipAddress {
+		s.log.Warn(
+			ctx,
+			"ip mismatch",
+			slog.String("user_id", userId.String()),
+			slog.String("old_ip", oldIpAddress),
+			slog.String("new_ip", ipAddress),
+		)
 		newDeviceId := sha256.Sum256([]byte(ipAddress))
 		if err := s.refreshTokensRepo.UpdateTokenHash(
 			ctx,

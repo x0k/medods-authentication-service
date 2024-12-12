@@ -31,6 +31,7 @@ func Logging(log *logger.Logger, next http.Handler) http.Handler {
 			slog.String("method", r.Method),
 			slog.String("url", r.RequestURI),
 			slog.Int("status", c.status),
+			slog.String("remote_addr", r.RemoteAddr),
 		)
 	})
 }

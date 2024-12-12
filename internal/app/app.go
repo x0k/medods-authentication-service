@@ -12,7 +12,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/wneessen/go-mail"
-	http_adapters "github.com/x0k/medods-authentication-service/internal/adapters/http"
 	pgx_adapter "github.com/x0k/medods-authentication-service/internal/adapters/pgx"
 	"github.com/x0k/medods-authentication-service/internal/lib/logger/sl"
 	email_messages_sender "github.com/x0k/medods-authentication-service/internal/messages_sender/email"
@@ -74,7 +73,7 @@ func Run(configPath string) {
 		cfg.Smtp.From,
 	)
 
-	router := newRouter(
+	router := NewRouter(
 		log,
 		pgxPool,
 		[]byte(cfg.Auth.Secret),
@@ -82,16 +81,9 @@ func Run(configPath string) {
 		emailSender,
 	)
 
-	sLog := log.With(slog.String("component", "http_server"))
 	srv := http.Server{
-		Addr: cfg.Server.Address,
-		Handler: http_adapters.Recover(
-			sLog,
-			http_adapters.Logging(
-				sLog,
-				router,
-			),
-		),
+		Addr:    cfg.Server.Address,
+		Handler: router,
 	}
 
 	go func() {
