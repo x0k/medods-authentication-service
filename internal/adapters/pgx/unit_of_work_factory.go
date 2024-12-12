@@ -2,6 +2,7 @@ package pgx_adapter
 
 import (
 	"context"
+	"errors"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -31,7 +32,11 @@ func (uow *UnitOfWork) Commit(ctx context.Context) error {
 }
 
 func (uow *UnitOfWork) Rollback(ctx context.Context) error {
-	return uow.tx.Rollback(ctx)
+	err := uow.tx.Rollback(ctx)
+	if errors.Is(err, pgx.ErrTxClosed) {
+		return nil
+	}
+	return err
 }
 
 func NewUnitOfWorkFactory(pgxPool *pgxpool.Pool) unit_of_work.Factory[pgx.Tx] {
